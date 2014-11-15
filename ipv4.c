@@ -22,25 +22,54 @@
 #include <unistd.h>
 #include <errno.h>
 #include <netinet/ip.h>
+#include <inttypes.h>
+
+#include "/Users/linyaoli/repo/linux_kernel/linux-3.13/include/linux/skbuff.h"
 
 #define BUFFER_SIZE 256
 #define PROTOCOL_NUM 2333
 
-struct _ip_pack {
+/*
+ * This struct is used to replace the sk_buff.
+ */
+struct _buff{
     /*
      * _type:
      * 1 - destination ip number in record.
      * 2 - data.
      */
-    unsigned char _type;
-    unsigned char _buffer[BUFFER_SIZE];
+    uint8_t     _type;
+    uint32_t    _idx;
+    uint8_t     _len;
+    // A size of 256 bytes buffer.
+    uint8_t     _buffer[BUFFER_SIZE];
+    uint32_t    _protocol;
+    // target machine.
+    char*       _target;
+    // source machine.
+    char*       _source;
 };
 
 /*
- * @struct sk_buff *skb
- *
+ * FIXME Seems like we dont have to create a new _buff
+ * TODO Does sk_buff work ?
  */
-int call_ip_local_out(struct sk_buff *skb) {
-    ip_local_out();
+int local_call(int full_len) {
+    struct skbuff *skb = alloc_skb(full_len, GFP_ATOMIC);
+    return ip_queue_xmit();
+}
+
+int _write() {
     return 0;
 }
+
+int _read() {
+    return 0;
+}
+
+int _receive() {
+
+}
+
+
+
